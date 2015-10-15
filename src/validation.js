@@ -9,7 +9,7 @@ const argConstraints = Joi.object().keys({
 ,	alias:Joi.string()
 ,	description: Joi.string()
 ,	default: Joi.any()
-,	valid: Joi.alternatives().try(Joi.string(),Joi.array())
+,	valid: Joi.alternatives().try(Joi.string(),Joi.array(),Joi.object())
 ,	validate: Joi.func()
 ,	coerce: Joi.func()
 });
