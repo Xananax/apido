@@ -1,4 +1,4 @@
-# APIMaker
+# apido
 
 A library to create environment-agnostic, full-on json, self-documenting apis. These apis can then be consumed any way you want, http, sockets, command line, or as a library.
 
@@ -9,20 +9,20 @@ It doesn't create exactly REST-like Apis, because those would be incompatible wi
 # Install & Usage
 
 ```sh
-npm install --save apimaker
+npm install --save apido
 ```
 
 example:
 
 ```js
-import apimaker from 'apimaker';
+import apido from 'apido';
 
 var todos = [
     {text:'b'}
 ,   {text:'a'}
 ]
 
-apimaker({
+apido({
     name:'Todos'
 ,   description:'Returns todo items'
 ,   default:'getAll'

@@ -1,6 +1,6 @@
 {
   "name": "apido",
-  "version": "0.5.0",
+  "version": "0.5.1",
   "description": "a package to create cross-consumption apis",
   "main": "index.js",
   "scripts": {
