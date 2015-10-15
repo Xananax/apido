@@ -6,6 +6,12 @@ It doesn't create exactly REST-like Apis, because those would be incompatible wi
 
 ---
 
+# TL;DR:
+
+You want to define functions once, and be able to use them everywhere, with arguments checking and casting, and self-generating documentation? You've come to the right place.
+
+---
+
 # Install & Usage
 
 ```sh
