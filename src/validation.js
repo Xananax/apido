@@ -27,7 +27,7 @@ const methodConstraints  = Joi.object().keys({
 const apiConstrainst = Joi.object().keys({
 	name: identifierConstraint.required()
 ,	description: Joi.string()
-,	default: identifierConstraint.required()
+,	default: identifierConstraint
 ,	key: identifierConstraint
 ,	methods:Joi.array().items(methodConstraints)
 })
