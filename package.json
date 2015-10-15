@@ -1,0 +1,22 @@
+{
+  "name": "apido",
+  "version": "0.5.0",
+  "description": "a package to create cross-consumption apis",
+  "main": "index.js",
+  "scripts": {
+    "compile": "babel src --out-dir lib",
+    "test": "mocha -w --compilers js:babel/register --require should --recursive --ui bdd --reporter spec"
+  },
+  "author": "xananax@yelostudio.com",
+  "license": "MIT",
+  "dependencies": {
+    "bluebird": "^2.10.2",
+    "joi": "^6.9.0",
+    "node.extend": "^1.1.5"
+  },
+  "devDependencies": {
+    "babel": "^5.8.23",
+    "mocha": "^2.3.3",
+    "should": "^7.1.0"
+  }
+}
