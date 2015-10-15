@@ -26,10 +26,38 @@ function checkArgumentsObject(props,args,checkRequired){
 	return returnedObj
 }
 
-function checkArgumentsArray(props,args,checkRequired,appendAdditionalProps){
+function checkArgumentsArray(props,args,checkRequired,appendAdditionalProps,consumeProps){
 	const {length} = args;
 	var i = 0;
 	const returnedObj = {}
+	if(consumeProps){
+		let char = consumeProps;
+		let parsedProps = [];
+		let temp = [];
+		if(char === true){
+			parsedProps = [props];
+		}
+		else{
+			props.forEach(prop=>{
+				if(typeof prop == 'string' && prop.indexOf(char)>=0){
+					let els = prop.split(char);
+					temp = temp.concat(els[0]);
+					els = els.slice(1);
+					parsedProps.push(temp.filter(Boolean))
+					temp = []
+					if(els.length>1){
+						parsedProps.push(els.filter(Boolean))
+					}else if(els.length){
+						temp.push(els[0]);
+					}
+				}else{
+					temp.push(prop);
+				}
+			})
+			if(temp.length){parsedProps.push(temp);}
+		}
+		props = parsedProps
+	}
 	if(appendAdditionalProps && props.length>length-1){
 		props = props.slice(0,length-1).concat([props.slice(length-1)])
 	}
@@ -43,7 +71,7 @@ function checkArgumentsArray(props,args,checkRequired,appendAdditionalProps){
 	return returnedObj
 }
 
-export default function makeCheckArgumentsFunction(needsArguments,methodArguments,methodArgumentsByName,appendAdditionalProps){
+export default function makeCheckArgumentsFunction(needsArguments,methodArguments,methodArgumentsByName,appendAdditionalProps,consumeProps){
 	const defaultArgs = getDefaultsArguments(methodArguments)
 	return function check(props,checkRequired,doNotAssign){
 		const propsType = isPlainObject(props) ? 
@@ -70,7 +98,7 @@ export default function makeCheckArgumentsFunction(needsArguments,methodArgument
 				}
 				return doNotAssign ? null : defaultArgs;
 			}
-			return checkArgumentsArray(props,methodArguments,false,appendAdditionalProps);
+			return checkArgumentsArray(props,methodArguments,false,appendAdditionalProps,consumeProps);
 		}
 		if(isObjectEmpty(props) && checkRequired){
 			if(needsArguments){

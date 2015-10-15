@@ -184,7 +184,7 @@ api.run('get',{id:0})
 
 or:
 ```js
-var req = {path:'/get/0',query:{}};
+var req = {path:'/get/0',query:{},method:'GET'};
 var res = {
     json(val){
         console.log(val)
@@ -219,6 +219,30 @@ api.run('help',{name:'getAll'}).then()
 api.methods.help('getAll').then()
 api.middleware({path:'/help/getAll'},res)
 ```
+
+---
+
+# API Methods & Properties
+
+## api.run(command,args) → Promise
+
+- `command` is a string
+- `args` is an object or an array
+Runs the specified command if found, or rejects the promise
+
+## api.runPath(path,args) → Promise
+- `path` is a `/` separated string
+- `args` is an object or an array
+`path` will be split on the `/` character. The first element will me the method, all other elements will be arguments, in order.
+
+- If given arguments are more numerous than the method's arguments, the method has the `append` property set, then the last element will inherit the rest of the array; elsewise, the additional arguments are discarded.
+- If `consume` is set, the array will be split on the `consume` character. (`/path/to:/something/else` with `consume` set to `:` will yield: `[['path','to'],['something','else']]`)
+
+## api.middleware(req,res,next)
+
+
+## api.methods → Object
+
 
 ---
 
@@ -352,6 +376,30 @@ var method = {
 }
 ```
 
+
+**Note on the `consume` property**: can be either `true` (the first argument will be the full array), or a string (the array will be split on that string).
+
+```js
+//changeUserDirectory/some/path/:/some/other/path
+var method = {
+    name:'changeUserDirectory'
+,   append:true
+,   consume:':'
+,   args:[
+        {
+            name:'source'
+        }
+    ,   {
+            name:'destination'
+        }
+    ]
+,   run({source,destination},cb){
+        console.log(source,destination) 
+        //['some','path'],['some','other','path']
+        cb();
+    }
+}
+```
 
 # API
 

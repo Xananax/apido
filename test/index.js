@@ -81,7 +81,8 @@ describe('# api.run',()=>{
 		)
 	})
 
-	describe('# api.run("command",[args,additionalArg])',()=>{
+
+	describe('# api.run("command",[args,additionalArg]) with append set to true',()=>{
 		it('should process the arguments in order and pass an object to the final function',done=>
 			apiMaker(makeApiProps())
 			.then(api=>api.runPath('getUsers/1/2/3/4'))
@@ -91,6 +92,59 @@ describe('# api.run',()=>{
 				answer.arguments.path.should.be.an.Array();
 				answer.result.path.should.be.an.Array();
 				answer.result.path.should.eql(['2','3','4'])
+				done()
+			})
+			.error(err=>done(err))
+		)
+	})
+
+	describe('# api.run("command",[args,additionalArg]) with append set to false',()=>{
+		it('should process the arguments in order and pass an object to the final function',done=>
+			apiMaker(makeApiProps())
+			.then(api=>api.runPath('getUsers2/1/2/3/4'))
+			.then(answer=>{
+				answer.arguments.should.have.property('id');
+				answer.arguments.id.should.equal('1');
+				answer.result.path.should.equal('2')
+				done()
+			})
+			.error(err=>done(err))
+		)
+	})
+
+	describe('# method with `consume` set to true',()=>{
+		it('should use the full array in the first argument',done=>
+			apiMaker(makeApiProps())
+			.then(api=>api.runPath('consumeTrue/1/2/3/4',{path:'a'}))
+			.then(answer=>{
+				answer.result.id.should.eql(['1','2','3','4'])
+				answer.result.path.should.equal('a');
+				done()
+			})
+			.error(err=>done(err))
+		)
+	})
+
+	describe('# method with `consume` set to a string',()=>{
+		it('should split the array on the character provided',done=>
+			apiMaker(makeApiProps())
+			.then(api=>api.runPath('consumeString/1/2/3/4:5/6/7/8:9/10/11'))
+			.then(answer=>{
+				answer.result.id.should.eql(['1','2','3','4'])
+				answer.result.path.should.eql(['5','6','7','8'])
+				done()
+			})
+			.error(err=>done(err))
+		)
+	})
+
+	describe('# method with `consume` set to a string and `append` set to true',()=>{
+		it('should use the full array',done=>
+			apiMaker(makeApiProps())
+			.then(api=>api.runPath('consumeStringAndAppend/1/2/3/4:5/6/7/8:9:/10/11'))
+			.then(answer=>{
+				answer.result.id.should.eql(['1','2','3','4'])
+				answer.result.path.should.eql([ [ '5', '6', '7', '8' ], [ '9' ], [ '10', '11' ] ])
 				done()
 			})
 			.error(err=>done(err))

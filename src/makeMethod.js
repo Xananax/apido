@@ -6,7 +6,7 @@ import makeCallbackFunction from './makeCallbackFunction';
 const assign = Object.assign;
 
 export default function makeMethod(methodProps,apiName){
-	const {name,method,description,args,optionalArgs,run,append} = methodProps;
+	const {name,method,description,args,optionalArgs,run,append,consume} = methodProps;
 	const methodArgumentsByName = {};
 	const methodArgumentsSummary = [name,'(']
 	const methodArgumentsHelp = {};
@@ -35,7 +35,7 @@ export default function makeMethod(methodProps,apiName){
 	,	args:methodArgumentsHelp
 	}
 	const yargsOptions = methodToYargs(name,description,methodArguments);
-	const checkArgs = makeFunctionArgumentChecker(needsArguments,methodArguments,methodArgumentsByName,append);
+	const checkArgs = makeFunctionArgumentChecker(needsArguments,methodArguments,methodArgumentsByName,append,consume);
 	const {length} = methodArguments;
 
 	function mapArray(...args){

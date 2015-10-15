@@ -21,6 +21,7 @@ const methodConstraints  = Joi.object().keys({
 ,	args: Joi.array().items(argConstraints).required()
 ,	optionalArgs: Joi.array().items(argConstraints)
 ,	append: Joi.boolean()
+,	consume: Joi.alternatives().try(Joi.string(),Joi.boolean())
 ,	run: Joi.func()
 })
 

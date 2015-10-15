@@ -143,6 +143,67 @@ export default function makeAPIProps(){
 					cb(null,{path});
 				}
 			}
+		,	{
+				name:'getUsers2'
+			,	append:false
+			,	args:[
+					{
+						name:'id'
+					}
+				,	{
+						name:'path'
+					}
+				]
+			,	run({id,path},cb){
+					cb(null,{path});
+				}
+			}
+		,	{
+				name:'consumeTrue'
+			,	consume:true
+			,	args:[
+					{
+						name:'id'
+					}
+				,	{
+						name:'path'
+					}
+				]
+			,	run({id,path},cb){
+					cb(null,{id,path});
+				}
+			}
+		,	{
+				name:'consumeString'
+			,	consume:':'
+			,	args:[
+					{
+						name:'id'
+					}
+				,	{
+						name:'path'
+					}
+				]
+			,	run({id,path},cb){
+					cb(null,{id,path});
+				}
+			}
+		,	{
+				name:'consumeStringAndAppend'
+			,	consume:':'
+			,	append:true
+			,	args:[
+					{
+						name:'id'
+					}
+				,	{
+						name:'path'
+					}
+				]
+			,	run({id,path},cb){
+					cb(null,{id,path});
+				}
+			}
 		]
 	}
 }
