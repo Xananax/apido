@@ -1,4 +1,4 @@
-export default function checkArg(
+export default function checkAndCoerceParameter(
 	given
 ,	{	
 		name
@@ -17,7 +17,7 @@ export default function checkArg(
 		return given;
 	}
 	if(validate && !validate(given)){
-		throw new Error(`argument for ${name} is invalid`);
+		throw new Error(`parameter for ${name} is invalid`);
 	}
 	return coerce?coerce(given):given;
 }

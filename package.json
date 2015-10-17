@@ -1,10 +1,10 @@
 {
   "name": "apido",
-  "version": "0.5.8",
+  "version": "0.5.9",
   "description": "a package to create cross-consumption apis",
   "main": "index.js",
   "scripts": {
-    "compile": "babel src --out-dir lib",
+    "compile": "rm -rf ./lib && ./node_modules/.bin/babel src --out-dir lib",
     "test": "./node_modules/.bin/mocha"
   },
   "author": "xananax@yelostudio.com",

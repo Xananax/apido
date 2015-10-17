@@ -11,12 +11,11 @@ export default function makeAPIProps(){
 	,	description:'Returns todo items'
 	,	default:'getAll'
 	,	key:'todos'
-	,	methods:[
+	,	commands:[
 			{
 				name:'add'
-			,	method:['post','get']
 			,	description:'adds a todo item'
-			,	args:[
+			,	parameters:[
 					{
 						name:'text'
 					,	description:'the todo text'
@@ -33,9 +32,8 @@ export default function makeAPIProps(){
 			}
 		,	{
 				name:'update'
-			,	method:['put','get']
 			,	description:'updates a todo item'
-			,	args:[
+			,	parameters:[
 					{
 						name:'id'
 					,	description:'the todo id'
@@ -68,9 +66,8 @@ export default function makeAPIProps(){
 			}
 		,	{
 				name:'get'
-			,	method:'get'
 			,	description:'returns a todo item'
-			,	args:[
+			,	parameters:[
 					{
 						name:'id'
 					,	description:'the todo id'
@@ -94,10 +91,9 @@ export default function makeAPIProps(){
 			}
 		,	{
 				name:'getAll'
-			,	method:'get'
 			,	description:'Returns all todos'
-			,	args:[]
-			,	optionalArgs:[
+			,	parameters:[]
+			,	optionalParameters:[
 					{
 						name:'orderBy'
 					,	alias:'o'
@@ -131,7 +127,7 @@ export default function makeAPIProps(){
 		,	{
 				name:'getUsers'
 			,	append:true
-			,	args:[
+			,	parameters:[
 					{
 						name:'id'
 					}
@@ -146,7 +142,7 @@ export default function makeAPIProps(){
 		,	{
 				name:'getUsers2'
 			,	append:false
-			,	args:[
+			,	parameters:[
 					{
 						name:'id'
 					}
@@ -161,7 +157,7 @@ export default function makeAPIProps(){
 		,	{
 				name:'consumeTrue'
 			,	consume:true
-			,	args:[
+			,	parameters:[
 					{
 						name:'id'
 					}
@@ -175,8 +171,8 @@ export default function makeAPIProps(){
 			}
 		,	{
 				name:'consumeString'
-			,	consume:':'
-			,	args:[
+			,	consume:'~'
+			,	parameters:[
 					{
 						name:'id'
 					}
@@ -190,9 +186,9 @@ export default function makeAPIProps(){
 			}
 		,	{
 				name:'consumeStringAndAppend'
-			,	consume:':'
+			,	consume:'~'
 			,	append:true
-			,	args:[
+			,	parameters:[
 					{
 						name:'id'
 					}

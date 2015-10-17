@@ -2,79 +2,79 @@ import makeApiProps from './readmeExample';
 import apiMaker from '../src';
 
 describe('# apiMaker',()=>
-	it('should create an object with the properties `run`, `middleware`, `description`, `methods`',done=>
+	it('should create an object with the properties `runCommand`, `middleware`, `description`, `commands`',done=>
 		apiMaker(makeApiProps())
 		.then(api=>{
-			api.should.have.property('run')
+			api.should.have.property('runCommand')
 			api.should.have.property('runPath')
 			api.should.have.property('middleware')
 			api.should.have.property('description')
-			api.should.have.property('methods')
-			api.run.should.be.a.function;
+			api.should.have.property('commands')
+			api.runCommand.should.be.a.function;
 			api.middleware.should.be.a.function;
 			api.description.should.be.an.object;
-			api.methods.should.be.an.object;
+			api.commands.should.be.an.object;
 			done();
 		})
 		.error(done)
 	)
 );
 
-describe('# api.run',()=>{
+describe('# api.runCommand',()=>{
 
-	describe('# api.run("command",{args})',()=>{
-		it('should return an object with the properties `apiName`, `methodName`, `arguments`, `result`',done=>
+	describe('# api.runCommand("command",{parameters})',()=>{
+		it('should return an object with the properties `apiName`, `commandName`, `parameters`, `result`',done=>
 			apiMaker(makeApiProps())
-			.then(api=>api.run('getAll',{orderBy:'a'}))
+			.then(api=>api.runCommand('getAll',{orderBy:'a'}))
 			.then(answer=>{
 				answer.should.have.property('apiName')
-				answer.should.have.property('methodName')
-				answer.should.have.property('arguments')
+				answer.should.have.property('commandName')
+				answer.should.have.property('parameters')
 				answer.should.have.property('result')
 				answer.result[0].text.should.equal('a');
 				done()
 			})
-			.error(done)		
+			.error(err=>done(err.nativeError))
 		)
-		it('should throw errors on invalid methods',done=>
+		it('should throw errors on invalid commands',done=>
 			apiMaker(makeApiProps())
-			.then(api=>api.run('someMethod',{orderBy:'whatevz'}))
+			.then(api=>api.runCommand('someMethod',{orderBy:'whatevz'}))
 			.then(()=>done(new Error('the callback should have been an error')))
 			.error(err=>done())		
 		)
-		it('should throw errors on invalid arguments',done=>
+		it('should throw errors on invalid parameters',done=>
 			apiMaker(makeApiProps())
-			.then(api=>api.run('getAll',{orderBy:'whatevz'}))
+			.then(api=>api.runCommand('getAll',{orderBy:'whatevz'}))
 			.then(()=>done(new Error('the callback should have been an error')))
 			.error(err=>done())
 		)
 	});
 
-	describe('# api.run("command")',()=>{
-		it('should use default arguments when not provided',done=>
+	describe('# api.runCommand("command")',()=>{
+		it('should use default parameters when not provided',done=>
 			apiMaker(makeApiProps())
 			.then(api=>
-				api.run('getAll',{orderBy:'a'})
-				.then(answer=>answer.result[0].text.should.equal('a') && api.run('getAll'))
+				api.runCommand('getAll',{orderBy:'a'})
+				.then(answer=>answer.result[0].text.should.equal('a') && api.runCommand('getAll'))
 				.then(answer=>answer.result[0].text.should.equal('b') && done())
 			)
 			.error(done)		
 		)
 		it('should throw if the argument is required',done=>
 			apiMaker(makeApiProps())
-			.then(api=>api.run('get'))
+			.then(api=>api.runCommand('get'))
 			.then(()=>done(new Error('the callback should have been an error')))
 			.error(err=>done())
 		)
 	});
 
-	describe('# api.run("command",[args])',()=>{
-		it('should process the arguments in order and pass an object to the final function',done=>
+	describe('# api.runCommand("command",[parameters])',()=>{
+		it('should process the parameters in order and pass an object to the final function',done=>
 			apiMaker(makeApiProps())
-			.then(api=>api.run('get',[0]))
+			.then(api=>api.runCommand('get',[0]))
 			.then(answer=>{
-				answer.arguments.should.have.property('id')
-				answer.arguments.id.should.equal(0)
+				answer.parameters.should.have.property('id')
+				answer.parameters.id.should.equal(0)
 				done()
 			})
 			.error(err=>done(err))
@@ -82,14 +82,14 @@ describe('# api.run',()=>{
 	})
 
 
-	describe('# api.run("command",[args,additionalArg]) with append set to true',()=>{
-		it('should process the arguments in order and pass an object to the final function',done=>
+	describe('# api.runCommand("command",[parameters,additionalArg]) with append set to true',()=>{
+		it('should process the parameters in order and pass an object to the final function',done=>
 			apiMaker(makeApiProps())
-			.then(api=>api.runPath('getUsers/1/2/3/4'))
+			.then(api=>api.runCommand('getUsers',['1','2','3','4']))
 			.then(answer=>{
-				answer.arguments.should.have.property('id');
-				answer.arguments.id.should.equal('1');
-				answer.arguments.path.should.be.an.Array();
+				answer.parameters.should.have.property('id');
+				answer.parameters.id.should.equal('1');
+				answer.parameters.path.should.be.an.Array();
 				answer.result.path.should.be.an.Array();
 				answer.result.path.should.eql(['2','3','4'])
 				done()
@@ -98,13 +98,13 @@ describe('# api.run',()=>{
 		)
 	})
 
-	describe('# api.run("command",[args,additionalArg]) with append set to false',()=>{
-		it('should process the arguments in order and pass an object to the final function',done=>
+	describe('# api.runCommand("command",[parameters,additionalArg]) with append set to false',()=>{
+		it('should process the parameters in order and pass an object to the final function',done=>
 			apiMaker(makeApiProps())
-			.then(api=>api.runPath('getUsers2/1/2/3/4'))
+			.then(api=>api.runPath('getUsers2/1:2:3:4'))
 			.then(answer=>{
-				answer.arguments.should.have.property('id');
-				answer.arguments.id.should.equal('1');
+				answer.parameters.should.have.property('id');
+				answer.parameters.id.should.equal('1');
 				answer.result.path.should.equal('2')
 				done()
 			})
@@ -112,10 +112,10 @@ describe('# api.run',()=>{
 		)
 	})
 
-	describe('# method with `consume` set to true',()=>{
+	describe('# command with `consume` set to true',()=>{
 		it('should use the full array in the first argument',done=>
 			apiMaker(makeApiProps())
-			.then(api=>api.runPath('consumeTrue/1/2/3/4',{path:'a'}))
+			.then(api=>api.runPath('consumeTrue/1:2:3:4',{path:'a'}))
 			.then(answer=>{
 				answer.result.id.should.eql(['1','2','3','4'])
 				answer.result.path.should.equal('a');
@@ -125,10 +125,10 @@ describe('# api.run',()=>{
 		)
 	})
 
-	describe('# method with `consume` set to a string',()=>{
+	describe('# command with `consume` set to a string',()=>{
 		it('should split the array on the character provided',done=>
 			apiMaker(makeApiProps())
-			.then(api=>api.runPath('consumeString/1/2/3/4:5/6/7/8:9/10/11'))
+			.then(api=>api.runPath('consumeString/1:2:3:4~5:6:7:8~9:10:11'))
 			.then(answer=>{
 				answer.result.id.should.eql(['1','2','3','4'])
 				answer.result.path.should.eql(['5','6','7','8'])
@@ -138,10 +138,10 @@ describe('# api.run',()=>{
 		)
 	})
 
-	describe('# method with `consume` set to a string and `append` set to true',()=>{
+	describe('# command with `consume` set to a string and `append` set to true',()=>{
 		it('should use the full array',done=>
 			apiMaker(makeApiProps())
-			.then(api=>api.runPath('consumeStringAndAppend/1/2/3/4:5/6/7/8:9:/10/11'))
+			.then(api=>api.runPath('consumeStringAndAppend/1:2:3:4~5:6:7:8~9~:10:11'))
 			.then(answer=>{
 				answer.result.id.should.eql(['1','2','3','4'])
 				answer.result.path.should.eql([ [ '5', '6', '7', '8' ], [ '9' ], [ '10', '11' ] ])
@@ -170,8 +170,8 @@ describe('# api.middleware(req,res,next)',()=>{
 	it('should process the command provided by the first item of req.path',done=>{
 		const cb = (err,result)=>{
 			if(err){return done(err);}
-			result.should.have.property('methodName')
-			result.methodName.should.equal('getAll');
+			result.should.have.property('commandName')
+			result.commandName.should.equal('getAll');
 			result.result.should.be.an.Array();
 			result.result[0].text.should.equal('b');
 			done();
@@ -184,11 +184,11 @@ describe('# api.middleware(req,res,next)',()=>{
 		.error(err=>e(err,done))
 	})
 
-	it('should process further elements as arguments',done=>{
+	it('should process further elements as parameters',done=>{
 		const cb = (err,result)=>{
 			if(err){return done(err);}
-			result.should.have.property('methodName')
-			result.methodName.should.equal('get');
+			result.should.have.property('commandName')
+			result.commandName.should.equal('get');
 			result.result.should.be.an.Object();
 			result.result.text.should.equal('b');
 			done();
@@ -204,8 +204,8 @@ describe('# api.middleware(req,res,next)',()=>{
 	it('should use the query object',done=>{
 		const cb = (err,result)=>{
 			if(err){return done(err);}
-			result.should.have.property('methodName')
-			result.methodName.should.equal('get');
+			result.should.have.property('commandName')
+			result.commandName.should.equal('get');
 			result.result.should.be.an.Object();
 			result.result.text.should.equal('b');
 			done();
@@ -218,11 +218,11 @@ describe('# api.middleware(req,res,next)',()=>{
 		.error(err=>done(err))
 	})
 
-	it('should prefer the path arguments',done=>{
+	it('should prefer the path parameters',done=>{
 		const cb = (err,result)=>{
 			if(err){return done(err);}
-			result.should.have.property('methodName')
-			result.methodName.should.equal('get');
+			result.should.have.property('commandName')
+			result.commandName.should.equal('get');
 			result.result.should.be.an.Object();
 			result.result.text.should.equal('a');
 			done();
@@ -238,8 +238,8 @@ describe('# api.middleware(req,res,next)',()=>{
 	it('should prefer req.query to req.body for GET requests',done=>{
 		const cb = (err,result)=>{
 			if(err){return done(err);}
-			result.should.have.property('methodName')
-			result.methodName.should.equal('get');
+			result.should.have.property('commandName')
+			result.commandName.should.equal('get');
 			result.result.should.be.an.Object()
 			result.result.text.should.equal('b');
 			done();
@@ -254,8 +254,8 @@ describe('# api.middleware(req,res,next)',()=>{
 	it('should prefer req.body to req.query for other http verbs',done=>{
 		const cb = (err,result)=>{
 			if(err){return done(err);}
-			result.should.have.property('methodName')
-			result.methodName.should.equal('get');
+			result.should.have.property('commandName')
+			result.commandName.should.equal('get');
 			result.result.should.be.an.Object()
 			result.result.text.should.equal('a');
 			done();
@@ -270,17 +270,17 @@ describe('# api.middleware(req,res,next)',()=>{
 
 })
 
-describe('#  api.methods.<methodName>(args)',()=>{
-	it('should run the method',done=>
+describe('#  api.commands.<commandName>(parameters)',()=>{
+	it('should runCommand the command',done=>
 		apiMaker(makeApiProps())
-		.then(api=>api.methods.getAll({orderBy:'a'}))
+		.then(api=>api.commands.getAll({orderBy:'a'}))
 		.then(answer=>answer.result[0].text.should.equal('a') && done())
 		.error(done)	
 	)
 });
 
-describe('#  api.runPath(str,args)',()=>{
-	it('should run the method',done=>
+describe('#  api.runPath(str,parameters)',()=>{
+	it('should runCommand the command',done=>
 		apiMaker(makeApiProps())
 		.then(api=>api.runPath('/get/0',{id:1}))
 		.then(answer=>answer.result.text.should.equal('b') && done())
@@ -289,47 +289,46 @@ describe('#  api.runPath(str,args)',()=>{
 });
 
 describe('# help',()=>{
-	describe('# api.run("help")',()=>{
+	describe('# api.runCommand("help")',()=>{
 		it('should return a helpful message',done=>{
 			apiMaker(makeApiProps())
-			.then(api=>api.run('help'))
+			.then(api=>api.runCommand('help'))
 			.then(answer=>{
 				answer.result.should.have.property('name')
 				answer.result.should.have.property('description')
-				answer.result.should.have.property('methods')
-				answer.result.methods.should.be.an.Object()
-				answer.result.methods.should.have.property('get');
-				answer.result.methods.get.should.have.property('summary')
-				answer.result.methods.get.should.have.property('description')
-				answer.result.methods.get.should.have.property('args')
-				answer.result.methods.get.args.should.be.an.Object()
-				answer.result.methods.get.args.should.have.property('id')
-				answer.result.methods.get.args.id.should.be.an.Object();
-				answer.result.methods.get.args.id.should.have.property('name');
-				answer.result.methods.get.args.id.should.have.property('description');
-				answer.result.methods.get.args.id.should.have.property('valid');
-				console.log(answer.result.methods)
+				answer.result.should.have.property('commands')
+				answer.result.commands.should.be.an.Object()
+				answer.result.commands.should.have.property('get');
+				answer.result.commands.get.should.have.property('summary')
+				answer.result.commands.get.should.have.property('description')
+				answer.result.commands.get.should.have.property('parameters')
+				answer.result.commands.get.parameters.should.be.an.Object()
+				answer.result.commands.get.parameters.should.have.property('id')
+				answer.result.commands.get.parameters.id.should.be.an.Object();
+				answer.result.commands.get.parameters.id.should.have.property('name');
+				answer.result.commands.get.parameters.id.should.have.property('description');
+				answer.result.commands.get.parameters.id.should.have.property('valid');
 				done();
 			})
 			.error(done)	
 		})
 	})
-	describe('# api.run("help",["get"])',()=>{
+	describe('# api.runCommand("help",["get"])',()=>{
 		it('should return a helpful message',done=>{
 			apiMaker(makeApiProps())
-			.then(api=>api.run('help',['get']))
+			.then(api=>api.runCommand('help',['get']))
 			.then(answer=>{
 				answer.result.should.have.property('summary')
 				answer.result.should.have.property('description')
-				answer.result.should.have.property('args');
-				answer.result.args.should.have.property('id');
-				answer.result.args.id.should.be.an.Object();
-				answer.result.args.id.should.have.property('name');
-				answer.result.args.id.should.have.property('description');
-				answer.result.args.id.should.have.property('valid');
+				answer.result.should.have.property('parameters');
+				answer.result.parameters.should.have.property('id');
+				answer.result.parameters.id.should.be.an.Object();
+				answer.result.parameters.id.should.have.property('name');
+				answer.result.parameters.id.should.have.property('description');
+				answer.result.parameters.id.should.have.property('valid');
 				done();
 			})
-			.error(done)	
+			.error(err=>done(err.nativeError))	
 		})
 	})
 })

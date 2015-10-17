@@ -1,14 +1,14 @@
 export default {
 	name:'help'
-,	method:['get','post']
+,	command:['get','post']
 ,	description:'help about the api'
-,	optionalArgs:[
+,	optionalParameters:[
 		{
 			name:'name'
 		,	description:'help about'
 		,	valid:'string'
-		,	validate(arg){
-				return (typeof arg == 'string')
+		,	validate(parameter){
+				return (typeof parameter == 'string')
 			}
 		}
 	]

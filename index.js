@@ -1,2 +1,2 @@
-var apimaker = require('./lib/makeAPI')
+var apimaker = require('./lib')
 module.exports = apimaker;

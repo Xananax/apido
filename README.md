@@ -2,13 +2,13 @@
 
 A library to create environment-agnostic, full-on json, self-documenting apis. These apis can then be consumed any way you want, http, sockets, command line, or as a library.
 
-It doesn't create exactly REST-like Apis, because those would be incompatible with other consumption methods.
+It doesn't create exactly REST-like Apis, because those would be incompatible with other consumption commands.
 
 ---
 
 # TL;DR:
 
-You want to define functions once, and be able to use them everywhere, with arguments checking and casting, and self-generating documentation? You've come to the right place.
+You want to define functions once, and be able to use them everywhere, with parameters checking and casting, and self-generating documentation? You've come to the right place.
 
 ---
 
@@ -33,12 +33,11 @@ apido({
 ,   description:'Returns todo items'
 ,   default:'getAll'
 ,   key:'todos'
-,   methods:[
+,   commands:[
         {
             name:'add'
-        ,   method:['post','get']
         ,   description:'adds a todo item'
-        ,   args:[
+        ,   parameters:[
                 {
                     name:'text'
                 ,   description:'the todo text'
@@ -55,9 +54,8 @@ apido({
         }
     ,   {
             name:'update'
-        ,   method:['put','get']
         ,   description:'updates a todo item'
-        ,   args:[
+        ,   parameters:[
                 {
                     name:'id'
                 ,   description:'the todo id'
@@ -90,9 +88,8 @@ apido({
         }
     ,   {
             name:'get'
-        ,   method:'get'
         ,   description:'returns a todo item'
-        ,   args:[
+        ,   parameters:[
                 {
                     name:'id'
                 ,   description:'the todo id'
@@ -116,10 +113,9 @@ apido({
         }
     ,   {
             name:'getAll'
-        ,   method:'get'
         ,   description:'Returns all todos'
-        ,   args:[]
-        ,   optionalArgs:[
+        ,   parameters:[]
+        ,   optionalParameters:[
                 {
                     name:'orderBy'
                 ,   alias:'o'
@@ -152,7 +148,7 @@ apido({
         }
     ,   {
             name:'getUsers'
-        ,   args:[
+        ,   parameters:[
                 {
                     name:'id'
                 }
@@ -175,12 +171,12 @@ apido({
 
 the `api` object will have five properties:
 
-- `api.run(command,args)`
+- `api.run(command,parameters)`
 - `api.runPath(path,opts)`
 - `api.middleware(req,res,next)`
-- `api.methods`
+- `api.commands`
 
-You can call the methods in the example above as such:
+You can call the commands in the example above as such:
 
 ```js
 api.run('get',{id:0})
@@ -190,7 +186,7 @@ api.run('get',{id:0})
 
 or:
 ```js
-var req = {path:'/get/0',query:{},method:'GET'};
+var req = {path:'/get/0',query:{}};
 var res = {
     json(val){
         console.log(val)
@@ -201,7 +197,7 @@ api.middleware(req,res)
 
 or:
 ```js
-api.methods.get({id:0})
+api.commands.get({id:0})
     .then(res=>console.log(res))
     .error(err=>throw err)
 ```
@@ -217,12 +213,12 @@ Additionally, all commands can be explored by calling `help`, like so:
 
 ```js
 api.run('help').then()
-api.methods.help().then()
+api.commands.help().then()
 api.middleware({path:'/help'},res)
 api.runPath('/help')
 //or, for a specific command:
 api.run('help',{name:'getAll'}).then()
-api.methods.help('getAll').then()
+api.commands.help('getAll').then()
 api.middleware({path:'/help/getAll'},res)
 ```
 
@@ -230,25 +226,26 @@ api.middleware({path:'/help/getAll'},res)
 
 # API Methods & Properties
 
-## api.run(command,args) → Promise
+## api.runCommand(command,parameters) → Promise
 
 - `command` is a string
-- `args` is an object or an array
+- `parameters` is an object or an array
 Runs the specified command if found, or rejects the promise
 
-## api.runPath(path,args) → Promise
+## api.runPath(path,parameters) → Promise
 - `path` is a `/` separated string
-- `args` is an object or an array
-`path` will be split on the `/` character. The first element will me the method, all other elements will be arguments, in order.
+- `parameters` is an object or an array
+`path` will be split on the `/` character. The first element will me the command, all other elements will be parameters, in order.
 
-- If given arguments are more numerous than the method's arguments, the method has the `append` property set, then the last element will inherit the rest of the array; elsewise, the additional arguments are discarded.
+- If given parameters are more numerous than the command's parameters, the command has the `append` property set, then the last element will inherit the rest of the array; elsewise, the additional parameters are discarded.
 - If `consume` is set, the array will be split on the `consume` character. (`/path/to:/something/else` with `consume` set to `:` will yield: `[['path','to'],['something','else']]`)
 
-## api.middleware(req,res,next)
+## api.middleware(req,res,next) → undefined
+a connect-compatible middleware. If you are not using it with express, be sure to parse `req.query` before passing `req`. If you intend to use http methods other than `get`, be sure to parse `body`;
 
 
-## api.methods → Object
-
+## api.commands → Object
+An object containing all the commands. All commands return promises.
 
 ---
 
@@ -256,7 +253,7 @@ Runs the specified command if found, or rejects the promise
 
 ## Argument
 
-A minimal argument needs at least a property `name`:
+A minimal parameter needs at least a property `name`:
 
 ```js
 var arg = {name:'id'}
@@ -265,7 +262,7 @@ var arg = {name:'id'}
 Here's the complete list of properties:
 ```js
 var arg = {
-    name:'orderBy' //used when passing an object of arguments
+    name:'orderBy' //used when passing an object of parameters
 ,   alias:'o' //used in command-line (not implemented yet)
 ,   description:'ordering of the todo items' //displays in help
 ,   valid:["alphabetical","numerical","a","n"] //displays in help, NOT used by any validation function
@@ -280,7 +277,7 @@ var arg = {
 }
 ```
 
-Optional arguments take an additional property, `default`:
+Optional parameters take an additional property, `default`:
 ```js
 // if `something` is not user specified, then "a value" will be returned
 var arg = {
@@ -292,11 +289,11 @@ var arg = {
 
 ## Method
 
-A minimal method needs the following:
+A minimal command needs the following:
 
 ```js
-var method = {
-    name:'addTodo' //name of the method
+var command = {
+    name:'addTodo' //name of the command
 ,   run(props,cb){
         cb(null,'anything')
     }
@@ -306,25 +303,24 @@ var method = {
 Here's the full listing of properties:
 
 ```js
-var method = {
-    name:'addTodo' //name of the method
-,   method:['get','put'] //string or array of http verbs for which the method is valid. Used only in "middleware"
+var command = {
+    name:'addTodo' //name of the command
 ,   description:'Returns all todos' //used in help
-,   append:false //if true, additional arguments will be appended to the last argument (see below)
-,   args:[] //array of arguments objects
-,   optionalArgs:[] //array of arguments objects
+,   append:false //if true, additional parameters will be appended to the last parameter (see below)
+,   parameters:[] //array of parameters objects
+,   optionalParameters:[] //array of parameters objects
 ,   run(props,cb){
         cb(null,'anything')
     }
 }
 ```
 
-When calling a method, one might pass either an object or an array as arguments.
-In other words, for the following method:
+When calling a command, one might pass either an object or an array as parameters.
+In other words, for the following command:
 ```js
-var method = {
+var command = {
     name:'aMethod'
-,   args:[
+,   parameters:[
         {name:'first'}
     ,   {name:'second'}
     ]
@@ -342,11 +338,11 @@ api.runPath('/aMethod/a/b')
 api.runPath('/aMethod',['a','b'])
 api.runPath('/aMethod/a',{second:'b'})
 api.runPath('/aMethod/a',[,'b'])
-api.methods.aMethod(['a','b'])
-api.methods.aMethod({first:'a',second:'b'})
+api.commands.aMethod(['a','b'])
+api.commands.aMethod({first:'a',second:'b'})
 ```
 
-**Note on the `append` property**: If true, arrays will be split on the arguments length, and the last argument will receive the remaining elements. In other words, for this call:
+**Note on the `append` property**: If true, arrays will be split on the parameters length, and the last parameter will receive the remaining elements. In other words, for this call:
 ```js
 api.run('aMethod',['a','b','c'])
 ```
@@ -363,10 +359,10 @@ This is useful for having paths of arbitrary length, or for nesting apis:
 
 ```js
 //getUsers/0/some/path/
-var method = {
+var command = {
     name:'getUsers'
 ,   append:true
-,   args:[
+,   parameters:[
         {
             name:'id'
         }
@@ -383,15 +379,15 @@ var method = {
 ```
 
 
-**Note on the `consume` property**: can be either `true` (the first argument will be the full array), or a string (the array will be split on that string).
+**Note on the `consume` property**: can be either `true` (the first parameter will be the full array), or a string (the array will be split on that string).
 
 ```js
 //changeUserDirectory/some/path/:/some/other/path
-var method = {
+var command = {
     name:'changeUserDirectory'
 ,   append:true
 ,   consume:':'
-,   args:[
+,   parameters:[
         {
             name:'source'
         }
@@ -414,7 +410,7 @@ A minimal API needs the following:
 ```js
 var API = {
     name:'Todos' //used in help
-,   methods:[] //an array of methods objects
+,   commands:[] //an array of commands objects
 }
 ```
 
@@ -423,12 +419,12 @@ Full listing of properties:
 var API = {
     name:'Todos'
 ,   description:'Returns todo items'
-,   default:'getAll' //when no method is provided, this will be the default method. Defaults to 'help'
-,   methods:[]
+,   default:'getAll' //when no command is provided, this will be the default command. Defaults to 'help'
+,   commands:[]
 }
 ```
 
-After going through the factory, an API will have an additional method, `help`, that will display information about the api or any method.
+After going through the factory, an API will have an additional command, `help`, that will display information about the api or any command.
 
 ---
 

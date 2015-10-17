@@ -1,3 +1,3 @@
-import makeAPI from './makeAPI';
+import makeAPI from './api';
 
 export default makeAPI;
