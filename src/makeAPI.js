@@ -6,7 +6,7 @@ import makeAPIMiddleware from './makeAPIMiddleware';
 import makeAPIRunFunction from './makeAPIRunFunction';
 import apiHelpMethodSpecification from './apiHelpMethodSpecification';
 import makeAPIRunPath from './makeAPIRunPath';
-import makeAPIIsValidCommand from './makeAPIIsValidCommand';
+import makeAPIIsValidCommandFunction from './makeAPIIsValidCommandFunction';
 
 export default Promise.promisify(function makeAPI(props,cb){
 	validAPI(props)
@@ -32,7 +32,7 @@ export default Promise.promisify(function makeAPI(props,cb){
 
 		//methods.help.run =;
 
-		const isValidMethod = makeAPIIsValidCommand(methods,defaultMethod);
+		const isValidMethod = makeAPIIsValidCommandFunction(methods,defaultMethod);
 		
 		const api = {
 			run:Promise.promisify(makeAPIRunFunction(methods,defaultMethod))
