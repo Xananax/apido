@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "compile": "babel src --out-dir lib",
-    "test": "mocha -w --compilers js:babel/register --require should --recursive --ui bdd --reporter spec"
+    "test": "./node_modules/.bin/mocha"
   },
   "author": "xananax@yelostudio.com",
   "license": "MIT",

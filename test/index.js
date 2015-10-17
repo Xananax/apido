@@ -308,6 +308,7 @@ describe('# help',()=>{
 				answer.result.methods.get.args.id.should.have.property('name');
 				answer.result.methods.get.args.id.should.have.property('description');
 				answer.result.methods.get.args.id.should.have.property('valid');
+				console.log(answer.result.methods)
 				done();
 			})
 			.error(done)	

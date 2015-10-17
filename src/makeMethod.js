@@ -5,10 +5,25 @@ import extend from 'node.extend';
 import makeCallbackFunction from './makeCallbackFunction';
 const assign = Object.assign;
 
+function makeSummary(name,methodArgumentsSummary,methodOptionalArgumentsSummary){
+	var str = name+'(';
+	if(methodArgumentsSummary.length || methodOptionalArgumentsSummary.length){
+		if(methodOptionalArgumentsSummary.length){
+			methodArgumentsSummary.push('['+methodOptionalArgumentsSummary.join(',')+']');
+		}
+		if(methodArgumentsSummary.length){
+			str+=methodArgumentsSummary.join(',');
+		}
+	}
+	str+=')';
+	return str;
+}
+
 export default function makeMethod(methodProps,apiName){
 	const {name,method,description,args,optionalArgs,run,append,consume} = methodProps;
 	const methodArgumentsByName = {};
-	const methodArgumentsSummary = [name,'(']
+	const methodArgumentsSummary = [];
+	const methodOptionalArgumentsSummary = [];
 	const methodArgumentsHelp = {};
 	var needsArguments = false;
 	const methodArguments = []
@@ -23,12 +38,16 @@ export default function makeMethod(methodProps,apiName){
 			const arg = {index,name,description,valid,validate,coerce,required,key,default:defaultValue};
 			methodArgumentsByName[name]	= arg
 			methodArgumentsHelp[name] = {name,description,valid,default:defaultValue}
-			methodArgumentsSummary.push(required?`[${name}]`:name)
+			if(required){
+				methodArgumentsSummary.push(name);	
+			}else{
+				methodOptionalArgumentsSummary.push(name);
+			}
 			if(required){needsArguments = true;}
 			return arg;
 		})
 	;
-	const summary = methodArgumentsSummary.join('')+')';
+	const summary = makeSummary(name,methodArgumentsSummary,methodOptionalArgumentsSummary);
 	const jsonHelp = {
 		summary
 	,	description
