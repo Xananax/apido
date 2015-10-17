@@ -224,6 +224,55 @@ api.middleware({path:'/help/getAll'},res)
 
 ---
 
+# apido Methods
+
+## apido({}) → Promise
+
+Creates an api. See below.
+
+## apido.fromObject({}) → Promise
+
+Useful to quickly prototype an api without fumbling with options too long.
+
+If you have an object of methods that follow the following specs:
+
+- All methods are async.
+- All methods take a regular nodeback (`function(err,result)`) as their last argument.
+- All methods have a defined number of arguments, *or* have a `size` property set. The `size` property, if set, should not include the callback in their number (that is, if the function uses 3 arguments and a callback, `size` should equal 3).
+
+```js
+import {fromObject} from 'apido';
+
+var commands = {
+    a(someArgument,cb){
+        cb()
+    }
+,   b(arg1,arg2,cb){
+        cb()
+    }
+,   c(...args){
+        var cb = args[0];
+        cb();
+    } 
+,   d(...args){
+        var cb = args[3];
+        cb()
+    }
+}
+commands.d.size = 3;
+
+fromObject(commands)
+    .then(api=>{
+        // api is ready
+    })
+    .error(err=>{throw err})
+```
+
+in the example above, command 'c' will receive no arguments (apart from a callback), because `fromObject` has no way to determine how many arguments it uses. The function 'd' will receive 3 arguments, and the callback (so 4 arguments in total), because it's `size` property is set.
+
+
+---
+
 # API Methods & Properties
 
 ## api.runCommand(command,parameters) → Promise
