@@ -292,6 +292,8 @@ Runs the specified command if found, or rejects the promise
 ## api.middleware(req,res,next) → undefined
 a connect-compatible middleware. If you are not using it with express, be sure to parse `req.query` before passing `req`. If you intend to use http methods other than `get`, be sure to parse `body`;
 
+## api.addCommand({commandObject}) → undefined
+Adds a command to the api. The command should a valid command object (see below).
 
 ## api.commands → Object
 An object containing all the commands. All commands return promises.
