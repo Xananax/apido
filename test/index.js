@@ -1,7 +1,7 @@
 import makeApiProps from './readmeExample';
 import apiMaker from '../src';
 
-describe('# apiMaker',()=>
+describe('# apiMaker',()=>{
 	it('should create an object with the properties `runCommand`, `middleware`, `description`, `commands`',done=>
 		apiMaker(makeApiProps())
 		.then(api=>{
@@ -18,7 +18,33 @@ describe('# apiMaker',()=>
 		})
 		.error(done)
 	)
-);
+	describe('# api.addCommand',()=>{
+		it('should add a command',done=>{
+			apiMaker(makeApiProps())
+			.then(api=>{
+				api.addCommand({
+					name:'example'
+				,	description:'an example command'
+				,	parameters:[
+						{
+							name:'param'
+						,	description:'a parameter'
+						}
+					]
+				,	run(){
+
+					}
+				});
+				api.commands.should.have.property('example');
+				return api.runCommand('help',['example'])
+			})
+			.then(answer=>{
+				answer.result.name.should.equal('example');
+				done();
+			})
+		})
+	})
+});
 
 describe('# api.runCommand',()=>{
 
@@ -154,7 +180,15 @@ describe('# api.runCommand',()=>{
 
 describe('# api.middleware(req,res,next)',()=>{
 	
-	function makeReq(method,path,query,body){return {path,query,method,body}}
+	function makeReq(method,path,query,body){
+		return {
+			path
+		,	query
+		,	method
+		,	body
+		};
+	}
+
 	function makeRes(done){
 		return {
 			json(result){
@@ -163,7 +197,13 @@ describe('# api.middleware(req,res,next)',()=>{
 			}
 		}
 	}
-	function makeReqRes(done,method,path,query,body){return {req:makeReq(method,path,query,body),res:makeRes(done)}}
+
+	function makeReqRes(done,method,path,query,body){
+		return {
+			req:makeReq(method,path,query,body)
+		,	res:makeRes(done)
+		};
+	}
 	
 	function e(err,done){console.log(err);done()}
 
