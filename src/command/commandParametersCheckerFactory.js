@@ -23,6 +23,12 @@ function checkAndCoerceParametersObject(props,parameters,checkRequired){
 		let ret = checkAndCoerceParameter(given,parameter,checkRequired);
 		returnedObj[name] = ret;
 	}
+	for(let name in props){
+		if(!hasOwnProperty.call(props,name)){continue;}
+		if(!(name in returnedObj)){
+			returnedObj[name] = props[name];
+		}
+	}
 	return returnedObj
 }
 

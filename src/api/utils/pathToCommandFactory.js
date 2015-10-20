@@ -30,7 +30,7 @@ export default function pathToCommandFactory(commandSep,parametersSep,commands){
 				parameters[0] = attachFalseCommand(tentativeCommand,parameters[0],commandChar);
 			}
 		}
-		if(!command){	
+		if(!command){
 			if(commands && !(tentativeCommand in commands)){
 				parameters[0] = attachFalseCommand(tentativeCommand,parameters[0],commandChar);
 			}else{

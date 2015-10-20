@@ -17,7 +17,7 @@ export default function checkAndCoerceParameter(
 		return given;
 	}
 	if(validate && !validate(given)){
-		throw new Error(`parameter for ${name} is invalid`);
+		throw new Error(`parameter for ${name} is invalid, valid:${valid}, passed:${given}`);
 	}
 	return coerce?coerce(given):given;
 }

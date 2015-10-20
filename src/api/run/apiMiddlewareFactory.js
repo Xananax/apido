@@ -10,7 +10,7 @@ export default function makeAPIMiddleware(runCommand,pathToCommand,useJson){
 		}
 
 		const [command,parameters] = pathToCommand(req.path);
-
+		
 		return requestVerb == 'get' ? 
 			runCommand(command,parameters,req.query,req.body,cb) : 
 			runCommand(command,parameters,req.body,req.query,cb)
